@@ -15,7 +15,7 @@ show(map); hold on
 createRobot()
 
 % Set waypoints to drive to
-waypoints = [-10 -10; 10,-10; 30 20];
+waypoints = [-25 -25; 10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5;10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5;10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5;-25 -25]; % Figure 8
 path = createPath(map,waypoints);
 plot(path(:,1),path(:,2), 'o-')
 
@@ -39,18 +39,15 @@ diffDriveTug = differentialDriveKinematics("VehicleInputs","VehicleSpeedHeadingR
 
 % Create pure persuit controller
 controller = controllerPurePursuit('DesiredLinearVelocity',2,'MaxAngularVelocity',3);
-
-
 end
 
 function path = createPath(map,waypoints)
 path = [];
+prm = robotics.PRM(map,1000);
 for waypoint = 1:length(waypoints)-1
    start = waypoints(waypoint,:);
    goal = waypoints(waypoint+1,:);
    
-   prm.NumNodes = 100;
-   prm = robotics.PRM(map);
    pathSection = findpath(prm, start, goal);
    path(end+1:end+length(pathSection),:) = pathSection;
 end
