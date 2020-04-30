@@ -1,23 +1,36 @@
-function driveThru(pointArray, lakeMap, lakeFigure, robotMapFigure)
+function driveThru(pointArray, lakeMap, lakeFigure, robotMap, robotMapFigure)
 
 % Plot the path on the reference map figure.
 figure(lakeFigure);
 hold on
-plot(path(:,1),path(:,2), 'o-');
+plot(pointArray(:,1),pointArray(:,2), 'o-');
 hold off
 
+diffDriveTug = differentialDriveKinematics("VehicleInputs","VehicleSpeedHeadingRate");
+
+
 % Set the path as the waypoints of the pure pursuit controller.
-controller.Waypoints = path;
+controller = controllerPurePursuit('DesiredLinearVelocity',2,'MaxAngularVelocity',3);
+controller.Waypoints = pointArray;
 disp('RoboTug path planned');
 
-%% Set up robot tug simulation
+% Create a sensor with a max range of 10 meters. This sensor simulates 
+% range readings based on a given pose and map. The reference map is used
+% with this range sensor to simulate collecting sensor readings in 
+% an unknown environment.
+% Its a little hard to fine documentation on rangeSensor fuction, so right
+% click on it and choose "help" or f1
+lidar = rangeSensor;    % creates a rangeSensor system object see help for info
+lidar.Range = [0.5,40];   % sets minimum and maximum range of sensor
+testPose = [40 40 pi/2];     % set an inital test pose for lidar
+
+% Set up robot tug simulation
 
 % Set the initial pose and final goal location based on the path. 
 % Create global variables for storing the current pose and an 
 % index for tracking the iterations.
-initPose = [path(1,1) path(1,2), pi/2];
-goal = [path(end,1) path(end,2)]';
-poses(:,1) = initPose';
+initPose = [pointArray(1,1) pointArray(1,2), pi/2];
+goal = [pointArray(end,1) pointArray(end,2)]';
 
 % Set up simulation variables
 sampleTime = 0.05;            % Sample time [s]
