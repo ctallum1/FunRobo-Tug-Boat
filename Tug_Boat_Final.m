@@ -24,6 +24,7 @@ animation = driveThru(pointArray, map);
 
 % Functions 
 
+
 function lakeMap = loadMap(image)
 % Creates binary ocupancy grid of map
 img =  imread(image);
@@ -40,7 +41,11 @@ end
 
 function pointArray = createPath(map,waypoints)
 pointArray = [];
+
+% Generates a probabilistic roadmap with 1000 nodes
 prm = robotics.PRM(map,1000);
+
+% generates path section for every sequential pair of waypoints
 for waypoint = 1:length(waypoints)-1
    start = waypoints(waypoint,:);
    goal = waypoints(waypoint+1,:);
@@ -49,6 +54,7 @@ for waypoint = 1:length(waypoints)-1
    pointArray(end+1:end+length(pathSection),:) = pathSection;
 end
 
+% removes waypoints to clean up path 
 repeatIndex = [1];
 while ~isempty(repeatIndex)
     [repeatIndex, pointArrayPosition] = intersect(pointArray,waypoints(2:end-1,:),'row');
