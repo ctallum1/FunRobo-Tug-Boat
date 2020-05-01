@@ -6,11 +6,14 @@ clear;
 disp('RoboTug Simulation Running');
 
 % Load up map of lake
-
 map = loadMap('lake1.png');
 
 % Set waypoints to drive to
-waypoints = [-25 -25; 10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5;10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5;10 10; 29 14; 23.5 6; -1 7; -9 2; -5 -5; -25 -25]; % Figure 8
+waypoints = [-25 -25; 
+    -15 -12; -25 0; -20 15; 0 18; 25 21; 40 16; 45 25; 46 6; 42 15;
+    40 0; 37 -14; 45 -16; 45 -25; 7 -25; 7 -16; 0 -4;
+    -10 2; 0 8; 23 5; 30 9; 23 17.5; 18 12; -2 -4;
+    -25 -25]; % Grand Finale path
 pointArray = createPath(map,waypoints);
 
 % Plot planned path
@@ -23,8 +26,6 @@ hold off
 animation = driveThru(pointArray, map);
 
 % Functions 
-
-
 function lakeMap = loadMap(image)
 % Creates binary ocupancy grid of map
 img =  imread(image);
@@ -63,10 +64,16 @@ end
 
 end
 
-function lakeFigure = driveThru(pointArray, lakeMap)
+function myVideo = driveThru(pointArray, lakeMap)
+% Set up video
+myVideo = VideoWriter('myVideoFile');
+myVideo.FrameRate = 20;
+open(myVideo)
+
 % create figure
 lakeFigure = figure('Name','lakeMap');
 show(lakeMap)
+title('Grand Finale')
 
 % Create differential drive robot
 diffDriveTug = differentialDriveKinematics("VehicleInputs","VehicleSpeedHeadingRate");
@@ -127,8 +134,12 @@ for idx = 1:numel(t)
 
     %plot robot onto known map
     plotTransforms(plotTrvec', plotRot, 'MeshFilePath', 'groundvehicle.stl', 'View', '2D', 'FrameSize', 2, 'Parent', ax1);
-
+    
+    % grab video frame
+    frame = getframe(gcf);
+    writeVideo(myVideo, frame);
     % waiting to iterate at the proper rate
     waitfor(r);
 end
+close(myVideo)
 end
